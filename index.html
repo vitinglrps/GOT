@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Livros de Game of Thrones</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background: url('https://wallpapercave.com/wp/wp1873912.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            margin-top: 50px;
+        }
+        .search-box {
+            width: 100%;
+            max-width: 400px;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #d4af37;
+            border-radius: 5px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.8);
+            color: black;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            text-align: left;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            background: #d4af37;
+            color: black;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 5px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #b8860b;
+            color: white;
+        }
+        h1 {
+            font-size: 2em;
+            font-weight: bold;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+        }
+        hr {
+            border: 1px solid #d4af37;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Livros de Game of Thrones</h1>
+        <p>Digite o nome de um livro para pesquisar ou carregue todos os livros disponíveis.</p>
+        <input type="text" id="search" class="search-box" placeholder="Ex: A Game of Thrones" onkeypress="handleKeyPress(event)">
+        <button onclick="searchBook()">Buscar</button>
+        <button onclick="fetchBooks()">Carregar Todos os Livros</button>
+        <div id="result" class="result"></div>
+    </div>
+    
+    <script>
+        async function searchBook() {
+            let query = document.getElementById('search').value.trim();
+            if (!query) {
+                alert("Por favor, digite algo para pesquisar.");
+                return;
+            }
+            
+            let apiUrl = `https://anapioficeandfire.com/api/books?name=${encodeURIComponent(query)}`;
+            
+            try {
+                let response = await fetch(apiUrl);
+                let data = await response.json();
+                
+                if (data.length > 0) {
+                    let resultDiv = document.getElementById('result');
+                    resultDiv.innerHTML = '<h2>Resultados:</h2>';
+                    
+                    data.forEach(book => {
+                        resultDiv.innerHTML += `
+                            <p><b>Título:</b> ${book.name}</p>
+                            <p><b>Autor:</b> ${book.authors.join(', ')}</p>
+                            <p><b>Páginas:</b> ${book.numberOfPages}</p>
+                            <p><b>Data de Lançamento:</b> ${book.released.split('T')[0]}</p>
+                            <hr>
+                        `;
+                    });
+                } else {
+                    document.getElementById('result').innerHTML = `<p>Nenhum livro encontrado.</p>`;
+                }
+            } catch (error) {
+                console.error('Erro ao buscar dados:', error);
+                document.getElementById('result').innerHTML = `<p>Erro ao buscar os dados.</p>`;
+            }
+        }
+        
+        async function fetchBooks() {
+            let apiUrl = 'https://anapioficeandfire.com/api/books';
+            
+            try {
+                let response = await fetch(apiUrl);
+                let data = await response.json();
+                
+                if (data.length > 0) {
+                    let resultDiv = document.getElementById('result');
+                    resultDiv.innerHTML = '<h2>Todos os Livros:</h2>';
+                    
+                    data.forEach(book => {
+                        resultDiv.innerHTML += `
+                            <p><b>Título:</b> ${book.name}</p>
+                            <p><b>Autor:</b> ${book.authors.join(', ')}</p>
+                            <p><b>Páginas:</b> ${book.numberOfPages}</p>
+                            <p><b>Data de Lançamento:</b> ${book.released.split('T')[0]}</p>
+                            <hr>
+                        `;
+                    });
+                } else {
+                    document.getElementById('result').innerHTML = `<p>Nenhum livro encontrado.</p>`;
+                }
+            } catch (error) {
+                console.error('Erro ao buscar dados:', error);
+                document.getElementById('result').innerHTML = `<p>Erro ao buscar os dados.</p>`;
+            }
+        }
+        
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                searchBook();
+            }
+        }
+    </script>
+</body>
+</html>
